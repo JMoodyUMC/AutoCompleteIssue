@@ -1,0 +1,87 @@
+﻿@page "/"
+
+@using AutoCompleteIssue.Data
+
+<Card>
+    <CardHeader>Test of Autocomplete</CardHeader>
+    <CardBody>
+        <DataGrid @ref="gridData"
+                  TItem="GridData"
+                  Bordered="true"
+                  Data="dataList"
+                  Editable="true"
+                  EditMode="DataGridEditMode.Inline"
+                  Filterable="false"
+                  Hoverable="true"
+                  Narrow="true"
+                  PageSize="dataList.Count"
+                  >
+            <DataGridColumns>
+                <DataGridColumn TItem="GridData" Field="@nameof(GridData.Code)" Caption="Code" Editable="true">
+                    <EditTemplate>
+                        @{ 
+                            selectedText = (String)context.CellValue;
+                            selectedValue = selectedText;
+                            <Autocomplete TItem="String" TValue="String"
+                                            Data="@autoList"
+                                            TextField="@(x => x)"
+                                            ValueField="@(x => x)"
+                                            SelectedValue="@selectedValue"
+                                            SelectedValueChanged="@(v => { selectedValue = v; })"
+                                            SelectedText="@selectedText"
+                                            SelectedTextChanged="@(v => { selectedText = v; })"
+                                            Filter="AutocompleteFilter.StartsWith"
+                                            FreeTyping="true"
+                                            Validator="ValidateEntry" />
+                        }
+                    </EditTemplate>
+                </DataGridColumn>
+                <DataGridCommandColumn TItem="GridData">
+                    <NewCommandTemplate>
+                        <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                    </NewCommandTemplate>
+                    <EditCommandTemplate>
+                        <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
+                    </EditCommandTemplate>
+                    <SaveCommandTemplate>
+                        <Button Color="Color.Primary" Clicked="@context.Clicked">Save</Button>
+                    </SaveCommandTemplate>
+                    <DeleteCommandTemplate>
+                        <Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>
+                    </DeleteCommandTemplate>
+                </DataGridCommandColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+@code{
+    List<String> autoList = new List<string>();
+    String selectedValue = String.Empty;
+    String selectedText = String.Empty;
+
+    DataGrid<GridData> gridData;
+    List<GridData> dataList = new List<GridData>();
+
+    protected override void OnInitialized()
+    {
+        autoList.Add("End");
+        autoList.Add("E1");
+        autoList.Add("E2");
+        autoList.Add("G11");
+        autoList.Add("G12");
+
+        base.OnInitialized();
+    }
+
+    private void AddNewTest()
+    {
+        GridData gd = new GridData();
+        dataList.Add(gd);
+    }
+
+    private void ValidateEntry(ValidatorEventArgs args)
+    {
+        ;
+    }
+}
